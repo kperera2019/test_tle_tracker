@@ -20,9 +20,10 @@ def main():
         lat = payload["latitude"]
         lon = payload["longitude"]
         vel = payload["velocity"]
+        altitude = payload["altitude"]
         timestamp= payload["timestamp"]
 
-        print(f"ISS is currently at lat: {lat}, lon: {lon} moving at a speed of {vel} km/h")
+        print(f"ISS is currently at lat: {lat}, lon: {lon} moving at a speed of {vel} km/h at {altitude} km")
 
 
         if(len(payloads) > 1):
