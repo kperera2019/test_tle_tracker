@@ -1,58 +1,27 @@
-from threading import Thread, Lock
-import json
-import httpx
-from math import radians, sin, cos
-from vpython import sphere, textures, rate, vector, color
+from query import get_iss_position
+from math import cos, sin, radians
+payload = get_iss_position()
+lat = payload["latitude"]
+lon = payload["longitude"]
 
+lat2rad= radians(lat)
+lon2rad = radians(lon)
 
+print(f"ISS is currently at lat: {lat}, lon: {lon}")
 
+print("In globe space, we'd need to account for some basics.")
 
+print("Assuming a globe with a radius of... what, 10 inches?")
+r = 10
 
-URL = "http://127.0.0.1:8000/iss-stream"
-latest_position = None
-position_lock = Lock()
-def listen_for_iss():
-    global latest_position
+def lat_lon_xyz(lat, lon, r):
+    lat2rad= radians(lat)
+    lon2rad = radians(lon)
+    x = r * cos(lat2rad) * cos(lon2rad)
+    y = r * cos(lat2rad) * sin(lon2rad)
+    z = r * sin(lat2rad)
+    return x, y, z
 
-    with httpx.stream("GET", URL, timeout=None) as response:
-        response.raise_for_status()
-
-        for line in response.iter_lines():
-            if not line or not line.startswith("data:"):
-                continue
-
-            payload = json.loads(line.removeprefix("data:").strip())
-
-            with position_lock:
-                latest_position = payload
-
-
-def lat_lon_to_xyz(latitude, longitude, radius=1.15):
-    lat = radians(latitude)
-    lon = radians(longitude)
-
-    x = radius * cos(lat) * cos(lon)
-    y = radius * sin(lat)
-    z = -radius * cos(lat) * sin(lon)
-
-    return vector(x, y, z)
-
-
-Thread(target=listen_for_iss, daemon=True).start()
-
-
-earth = sphere(pos=vector(0,0,0), radius=1, texture=textures.earth)
-iss = sphere(pos=vector(0, 0, 0), radius=0.04, color=color.red)
-
-#Rotation optional. for sake of clarity and ease of use, 
-# earth.rotate(angle=radians(23.5), axis=vector(0,0,1))
-while True:
-    rate(60)
-
-    with position_lock:
-        position = latest_position #retain and set latest position to local variable for use outside of lock
-
-    if position:
-        iss.pos = lat_lon_to_xyz(position["latitude"], position["longitude"])
-
-    #earth.rotate(angle=0.01, axis=vector(0, 1, 0))
+print(f"Radius of the globe: {r} inches")
+x, y, z = lat_lon_xyz(lat, lon, r)
+print(f"ISS position in globe space: x={x:.2f}, y={y:.2f}, z={z:.2f}")
