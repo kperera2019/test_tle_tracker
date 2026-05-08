@@ -3,6 +3,8 @@ follow the ISS
 # TO INSTALL:
 conda create --name isspython python=3.11 flask
 
-# TO RUN FLASK SERVER + QUERY LOCATION
+# TO RUN FLASK SERVER 
 python -m flask --app app run -> start flask server
+
+# TO ACTUALLY PULL DATA
 python globe.py -> Poll for realtime status on ISS
