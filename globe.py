@@ -22,8 +22,9 @@ def main():
         vel = payload["velocity"]
         altitude = payload["altitude"]
         timestamp= payload["timestamp"]
-
-        print(f"ISS is currently at lat: {lat}, lon: {lon} moving at a speed of {vel} km/h at {altitude} km")
+        chktime=time.localtime(timestamp)
+        #TODO: make chktime look human readable
+        print(f"At {chktime} ISS is currently at lat: {lat}, lon: {lon} moving at a speed of {vel} km/h at {altitude} km")
 
 
         if(len(payloads) > 1):
@@ -35,18 +36,19 @@ def main():
             dlat = radians(lat - prev['latitude'])
             dt = timestamp - prev['timestamp']
             print(f"Change in position: dlat={dlat:.4f} rad, dlon={dlon:.4f} rad, dt={dt} seconds")
+            #verify distance between timestamps - sleep ten, but dt tends between 18 and 20
         else:
             print("No previous position data available.")
 
 
-        print("In globe space, we'd need to account for some basics.")
+       # print("In globe space, we'd need to account for some basics.")#
 
-        print("Assuming a globe with a radius of... what, 10 inches?")
-        r = 10
+        #print("Assuming a globe with a radius of... what, 10 inches?")
+        #r = 10
 
-        print(f"Radius of the globe: {r} inches")
-        x, y, z = lat_lon_xyz(lat, lon, r)
-        print(f"ISS position in globe space: x={x:.2f}, y={y:.2f}, z={z:.2f}")
+        #print(f"Radius of the globe: {r} inches")
+        #x, y, z = lat_lon_xyz(lat, lon, r)
+        #print(f"ISS position in globe space: x={x:.2f}, y={y:.2f}, z={z:.2f}")
         time.sleep(10)
 
 
